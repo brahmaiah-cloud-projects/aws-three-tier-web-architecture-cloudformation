@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Elastic IP and NAT Gateway For Three Tier Web Architecture
+
+Parameters:
+
+  PublicSubnet1Id:
+    Type: AWS::EC2::Subnet::Id
+  
+
+Resources:
+
+  MyElasticIP:
+
+    Type: AWS::EC2::EIP
+    Properties:
+
+      Domain: vpc
+
+
+  NatGateway:
+
+    Type: AWS::EC2::NatGateway
+    Properties:
+
+      SubnetId: !Ref PublicSubnet1Id
+
+      AllocationId: !GetAtt MyElasticIP.AllocationId
+
+      Tags:
+        - Key : Name
+          Value: ThreeTierNATGateway
+
+Outputs:
+
+  NatGatewayId: 
+    Value: !Ref NatGateway
+
+  ElasticAllocationId:
+    Value: !GetAtt MyElasticIP.AllocationId
+
+

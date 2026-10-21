@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Security Groups For Three Tier Architecture
+
+Parameters:
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+Resources:
+
+  ALBSecurityGroup:
+
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+
+      GroupDescription: Security Group For ALB
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+
+
+      Tags:
+        - Key: Name
+          Value: ALBSecurityGroup
+
+
+  EC2SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group For EC2
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !Ref ALBSecurityGroup
+
+      Tags:
+        - Key: Name
+          Value: EC2SecurityGroup
+
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group For Database
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          SourceSecurityGroupId: !Ref EC2SecurityGroup
+
+      Tags:
+        - Key: Name
+          Value: DBSecurityGroup
+
+
+Outputs:
+
+  ALBSecurityGroupId:
+    Value: !Ref ALBSecurityGroup
+  EC2SecurityGroupId:
+    Value: !Ref EC2SecurityGroup
+
+  DBSecurityGroupId:
+    Value: !Ref DBSecurityGroup
+       
+
+    
+
+
+     

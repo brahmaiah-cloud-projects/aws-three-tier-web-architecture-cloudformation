@@ -1,0 +1,137 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Route Tables For Three Tier Architecture	
+
+
+Parameters:
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+  IGWId:
+    Type: String
+
+  NatGatewayId: 
+
+    Type: String
+
+  PublicSubnet1Id:
+    Type: AWS::EC2::Subnet::Id
+
+  PublicSubnet2Id:
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnet1Id:
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnet2Id:
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnetDB1Id:
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnetDB2Id:
+    Type: AWS::EC2::Subnet::Id
+
+
+Resources:
+
+  PublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VpcId
+      Tags:
+        - Key: Name
+          Value: PublicRouteTable
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    Properties:
+
+      RouteTableId: !Ref PublicRouteTable
+      GatewayId: !Ref IGWId
+      DestinationCidrBlock: 0.0.0.0/0
+
+  PrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VpcId
+      Tags:
+        - Key: Name
+          Value: PrivateRouteTable
+
+  PrivateRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      NatGatewayId: !Ref NatGatewayId
+      DestinationCidrBlock: 0.0.0.0/0
+
+  DBRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VpcId
+      Tags:
+        - Key: Name
+          Value: DBRouteTable
+
+
+  PublicSubnetAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet1Id
+      RouteTableId: !Ref PublicRouteTable
+
+  PublicSubnetAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PublicSubnet2Id
+      RouteTableId: !Ref PublicRouteTable
+
+  PrivateSubnetAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet1Id
+      RouteTableId: !Ref PrivateRouteTable
+  PrivateSubnetAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnet2Id
+      RouteTableId: !Ref PrivateRouteTable
+
+  DBRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetDB1Id
+      RouteTableId: !Ref DBRouteTable
+
+
+  DBRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref PrivateSubnetDB2Id
+      RouteTableId: !Ref DBRouteTable
+
+
+Outputs:
+
+  PublicRouteTableId:
+    Value: !Ref PublicRouteTable
+
+  PrivateRouteTableId:
+    Value: !Ref PrivateRouteTable
+
+  DBRouteTableId:
+    Value: !Ref DBRouteTable
+
+
+
+
+      
+
+  
+
+
+
+
+

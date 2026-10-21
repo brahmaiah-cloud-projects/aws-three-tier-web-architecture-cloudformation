@@ -1,0 +1,115 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Parent Stack For Three tier web architecture.
+
+
+Resources:
+
+  VPCStack:
+
+    Type: AWS::CloudFormation::Stack
+    Properties: 
+
+      TemplateURL: vpc.yaml 
+
+  SubnetStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+
+      TemplateURL: subnet.yaml
+      Parameters: 
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+
+  InternetGatewayStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+
+      TemplateURL: igw.yaml
+      Parameters: 
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+
+  NatGatewayStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: nat.yaml
+      Parameters:
+        PublicSubnet1Id: !GetAtt SubnetStack.Outputs.PublicSubnet1Id
+
+  RouteTableStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+
+      TemplateURL: route-table.yaml
+      Parameters:
+
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+        IGWId: !GetAtt InternetGatewayStack.Outputs.IGWId
+        NatGatewayId: !GetAtt NatGatewayStack.Outputs.NatGatewayId
+        PublicSubnet1Id: !GetAtt SubnetStack.Outputs.PublicSubnet1Id
+        PublicSubnet2Id: !GetAtt SubnetStack.Outputs.PublicSubnet2Id
+        PrivateSubnet1Id: !GetAtt SubnetStack.Outputs.PrivateSubnet1Id
+        PrivateSubnet2Id: !GetAtt SubnetStack.Outputs.PrivateSubnet2Id
+        PrivateSubnetDB1Id: !GetAtt SubnetStack.Outputs.PrivateSubnetDB1Id
+        PrivateSubnetDB2Id: !GetAtt SubnetStack.Outputs.PrivateSubnetDB2Id
+
+
+  SecurityGroupStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+
+      TemplateURL: Security.yaml
+      Parameters:
+        VpcId: !GetAtt VPCStack.Outputs.VpcId
+
+  ALBStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: alb.yaml
+      Parameters:
+       VpcId: !GetAtt VPCStack.Outputs.VpcId
+       PublicSubnet1Id: !GetAtt SubnetStack.Outputs.PublicSubnet1Id
+       PublicSubnet2Id: !GetAtt SubnetStack.Outputs.PublicSubnet2Id
+       ALBSecurityGroupId: !GetAtt SecurityGroupStack.Outputs.ALBSecurityGroupId
+
+  LaunchTemplateStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: launch-template.yaml
+      Parameters:
+        EC2SecurityGroupId: !GetAtt SecurityGroupStack.Outputs.EC2SecurityGroupId
+
+  ASGStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: asg.yaml
+      Parameters:
+        PrivateSubnet1Id: !GetAtt SubnetStack.Outputs.PrivateSubnet1Id
+        PrivateSubnet2Id: !GetAtt SubnetStack.Outputs.PrivateSubnet2Id
+        LaunchTemplateId: !GetAtt LaunchTemplateStack.Outputs.LaunchTemplateId
+        TargetGroupArn: !GetAtt ALBStack.Outputs.TargetGroupArn
+
+  RDSStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: rds.yaml
+      Parameters:
+        DBSecurityGroupId: !GetAtt SecurityGroupStack.Outputs.DBSecurityGroupId
+        PrivateSubnetDB1Id: !GetAtt SubnetStack.Outputs.PrivateSubnetDB1Id
+        PrivateSubnetDB2Id: !GetAtt SubnetStack.Outputs.PrivateSubnetDB2Id
+
+        
+
+      
+       
+        
+
+        
+
+      
+
+Outputs: 
+
+  VpcId:
+
+    Value: !GetAtt VPCStack.Outputs.VpcId
+

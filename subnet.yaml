@@ -1,0 +1,123 @@
+AWSTemplateFormatversion: 2010-09-09
+
+Description: Subnets for Three tier Architecture.
+
+Parameters:
+
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+
+Resources:
+
+  PublicSubnet1:
+
+    Type: AWS::EC2::Subnet
+    Properties:
+
+      VpcId: !Ref VpcId
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: ap-south-2a
+      MapPublicIpOnLaunch: true
+  
+      Tags: 
+        - Key: Name
+          Value: PublicSubnet1
+
+
+  PublicSubnet2:
+
+    Type: AWS::EC2::Subnet
+    Properties:
+
+      VpcId: !Ref VpcId
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: ap-south-2b
+      MapPublicIpOnLaunch: true
+
+      Tags: 
+        - Key: Name
+          Value: PublicSubnet2
+
+
+  PrivateSubnet1:
+
+    Type: AWS::EC2::Subnet
+    Properties:
+
+      VpcId: !Ref VpcId
+      CidrBlock: 10.0.4.0/24
+      AvailabilityZone: ap-south-2a
+      MapPublicIpOnLaunch: false
+
+      Tags: 
+        - Key: Name
+          Value: PrivateSubnet1
+
+  PrivateSubnet2:
+
+    Type: AWS::EC2::Subnet
+    Properties:
+
+      VpcId: !Ref VpcId
+      CidrBlock: 10.0.5.0/24
+      AvailabilityZone: ap-south-2b
+      MapPublicIpOnLaunch: false
+
+      Tags: 
+        - Key: Name
+          Value: PrivateSubnet2
+
+  PrivateSubnetDB1:
+
+    Type: AWS::EC2::Subnet
+    Properties:
+
+      VpcId: !Ref VpcId
+      CidrBlock: 10.0.21.0/24
+      AvailabilityZone: ap-south-2a
+      MapPublicIpOnLaunch: false
+      Tags: 
+        - Key: Name
+          Value: PrivateSubnetDB1
+
+  PrivateSubnetDB2:
+
+    Type: AWS::EC2::Subnet
+    Properties:
+
+      VpcId: !Ref VpcId
+      CidrBlock: 10.0.22.0/24
+      AvailabilityZone: ap-south-2b
+      MapPublicIpOnLaunch: false
+      Tags: 
+        - Key: Name
+          Value: PrivateSubnetDB2
+
+
+
+Outputs:
+
+  PublicSubnet1Id:
+    Value: !Ref PublicSubnet1
+
+  PublicSubnet2Id:
+    Value: !Ref PublicSubnet2
+
+  PrivateSubnet1Id:
+    Value: !Ref PrivateSubnet1
+
+  PrivateSubnet2Id:
+    Value: !Ref PrivateSubnet2
+
+  PrivateSubnetDB1Id:
+     Value: !Ref PrivateSubnetDB1
+
+  PrivateSubnetDB2Id:
+    Value: !Ref PrivateSubnetDB2
+
+  
+
+  
+
+
+

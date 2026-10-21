@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: VPC stack for three tier web architecture.
+
+Resources:
+
+  ProjectVPC:
+
+    Type: AWS::EC2::VPC
+    Properties:
+
+      CidrBlock: 10.0.0.0/16
+
+      EnableDnsHostnames: true
+
+      EnableDnsSupport: true
+
+      Tags: 
+
+        - Key: Name
+          Value: ThreeTierVPC
+
+
+
+Outputs:
+
+   VpcId:
+     Value: !Ref ProjectVPC
+
+
+
+We should also add the subnets in the vpc stack right.

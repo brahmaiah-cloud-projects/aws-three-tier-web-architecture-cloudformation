@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: RDS For Three Tier Web Architecture
+
+Parameters:
+
+  DBSecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+  PrivateSubnetDB1Id:
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnetDB2Id:
+    Type: AWS::EC2::Subnet::Id
+
+
+Resources:
+
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+
+      DBSubnetGroupDescription: DB Subnet Group For RDS
+
+      SubnetIds:
+
+        - !Ref PrivateSubnetDB1Id
+        - !Ref PrivateSubnetDB2Id
+
+      Tags:
+        - Key: Name
+          Value: ThreeTierDBSubnetGroup
+
+
+  MyDatabase:
+
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: threetier
+      Engine: mysql
+      EngineVersion: "8.0"
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: 20
+      MasterUsername: admin
+      MasterUserPassword: Password123!
+      MultiAZ: false
+      PubliclyAccessible: false
+      VPCSecurityGroups:
+        - !Ref DBSecurityGroupId
+
+      DBSubnetGroupName: !Ref DBSubnetGroup
+
+      BackupRetentionPeriod: 7
+
+
+Outputs:
+  DBInstanceIdentifier:
+    Value: !Ref MyDatabase
+  
+
+  DBEndpoint:
+    Value: !GetAtt MyDatabase.Endpoint.Address
+
+
+      
+
+       

@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Description: Auto Scaling Group For Three Tier Web Architecture
+
+Parameters: 
+
+  LaunchTemplateId:
+    Type: String
+
+  TargetGroupArn:
+    Type: String
+
+  PrivateSubnet1Id:
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnet2Id:
+    Type: AWS::EC2::Subnet::Id
+
+  
+
+
+Resources:
+
+  AutoScalingGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+
+      LaunchTemplate:
+
+        LaunchTemplateId: !Ref LaunchTemplateId
+        Version: 1
+
+      MaxSize: 4
+      MinSize: 2
+      DesiredCapacity: 2
+
+      VPCZoneIdentifier:
+        - !Ref PrivateSubnet1Id
+        - !Ref PrivateSubnet2Id
+
+      TargetGroupARNs:
+        - !Ref TargetGroupArn
+
+
+Outputs:
+
+  AutoScalingGroupName:
+    Value: !Ref AutoScalingGroup
+      
+ 
+    
